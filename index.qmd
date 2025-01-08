@@ -4,4 +4,62 @@ title: "publishPage"
 
 This is a Quarto website.
 
+this is the python script:
+```python
+import os
+import requests
+
+# Função para criar o URL com os parâmetros fornecidos
+def generate_url():
+    print("Por favor, insira os seguintes dados:")
+    name = input("Nome do projeto: ")
+    artifact_id = input("Artifact ID: ")
+    group_id = input("Group ID: ")
+    java_version = input("Versão Java (ex: 17): ")
+    packaging = input("Escolha o packaging (jar ou war): ")
+    build_tool = input("Escolha o build tool (maven ou gradle): ")
+    description = input("Descrição do projeto: ")
+    dependencies = input("Dependências (separadas por vírgula, ex: web,data-jpa): ")
+
+    url = f"https://start.spring.io/starter.zip?type={build_tool}-project&language=java&platformVersion=3.4.1&packaging={packaging}&jvmVersion={java_version}&groupId={group_id}&artifactId={artifact_id}&name={name}&description={description}&packageName={group_id}.{artifact_id}&dependencies={dependencies}"
+    return url
+
+# Função para baixar o projeto no Desktop
+def download_project(url):
+    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")  # Caminho para a área de trabalho
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Garante que o código de status HTTP seja 200 (OK)
+
+        # Verifica se o conteúdo é realmente um arquivo zip
+        if "zip" not in response.headers["Content-Type"]:
+            print("Erro: O arquivo baixado não é um .zip válido.")
+            return
+
+        file_name = url.split('=')[-1] + '.zip'
+        file_path = os.path.join(desktop_path, file_name)
+
+        with open(file_path, 'wb') as file:
+            file.write(response.content)
+        
+        print(f"Projeto baixado com sucesso para: {file_path}")
+    except requests.exceptions.HTTPError as errh:
+        print(f"Erro HTTP: {errh}")
+    except requests.exceptions.ConnectionError as errc:
+        print(f"Erro de Conexão: {errc}")
+    except requests.exceptions.Timeout as errt:
+        print(f"Erro de Timeout: {errt}")
+    except requests.exceptions.RequestException as err:
+        print(f"Erro ao fazer a requisição: {err}")
+
+# Função principal
+def main():
+    url = generate_url()
+    download_project(url)
+
+if __name__ == "__main__":
+    main()
+```
+
+
 To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
